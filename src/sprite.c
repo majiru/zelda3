@@ -565,7 +565,7 @@ int Sprite_SpawnSimpleSparkleGarnishEx(int k, uint16 x, uint16 y, int limit) {
   return j;
 }
 
-static int AllocOverlord() {
+static int AllocOverlord(void) {
   int i = 7;
   while (i >= 0 && overlord_type[i] != 0)
     i--;
@@ -983,7 +983,7 @@ bool Sprite_TutorialGuard_ShowMessageOnContact(int k, uint16 msg) {  // 85fa59
   return rv;
 }
 
-void Sprite_ShowMessageMinimal() {  // 85fa8e
+void Sprite_ShowMessageMinimal(void) {  // 85fa8e
   byte_7E0223 = 0;
   messaging_module = 0;
   submodule_index = 2;
@@ -991,7 +991,7 @@ void Sprite_ShowMessageMinimal() {  // 85fa8e
   main_module_index = 14;
 }
 
-void Prepare_ApplyRumbleToSprites() {  // 8680fa
+void Prepare_ApplyRumbleToSprites(void) {  // 8680fa
   static const int8 kApplyRumble_X[4] = { -32, -32, -32, 16 };
   static const int8 kApplyRumble_Y[4] = { -32, 32, -24, -24 };
   static const uint8 kApplyRumble_WH[6] = { 0x50, 0x50, 0x20, 0x20, 0x50, 0x50 };
@@ -1107,7 +1107,7 @@ void Sprite_SpawnSecret(int k) {  // 868264
   }
 }
 
-void Sprite_Main() {  // 868328
+void Sprite_Main(void) {  // 868328
   if (!player_is_indoors) {
     ancilla_floor[0] = 0;
     ancilla_floor[1] = 0;
@@ -1149,7 +1149,7 @@ void Sprite_Main() {  // 868328
     byte_7E0FC6 = load_chr_halfslot_even_odd;
 }
 
-void Oam_ResetRegionBases() {  // 8683d3
+void Oam_ResetRegionBases(void) {  // 8683d3
   memcpy(oam_region_base, kOam_ResetRegionBases, 12);
 }
 
@@ -2817,7 +2817,7 @@ void Sprite_ApplyRecoilToLink(int k, uint8 vel) {  // 86f688
   link_z_coord = 0;
 }
 
-void Link_PlaceWeaponTink() {  // 86f69f
+void Link_PlaceWeaponTink(void) {  // 86f69f
   if (repulsespark_timer)
     return;
   repulsespark_timer = 5;
@@ -3171,7 +3171,7 @@ bool Sprite_ReturnIfRecoiling(int k) {  // 86ff78
   return sprite_type[k] != 0x7a;
 }
 
-bool Sprite_CheckIfLinkIsBusy() {  // 87f4d0
+bool Sprite_CheckIfLinkIsBusy(void) {  // 87f4d0
   if (link_auxiliary_state | link_pose_for_item | (link_state_bits & 0x80))
     return true;
   for (int i = 4; i >= 0; i--) {
@@ -3189,7 +3189,7 @@ void Sprite_SetSpawnedCoordinates(int k, SpriteSpawnInfo *info) {  // 89ae64
   sprite_z[k] = info->r4_z;
 }
 
-bool Sprite_CheckIfScreenIsClear() {  // 89af32
+bool Sprite_CheckIfScreenIsClear(void) {  // 89af32
   for (int i = 15; i >= 0; i--) {
     if (sprite_state[i] && !(sprite_flags4[i] & 0x40)) {
       uint16 x = Sprite_GetX(i) - BG2HOFS_copy2;
@@ -3201,7 +3201,7 @@ bool Sprite_CheckIfScreenIsClear() {  // 89af32
   return Sprite_CheckIfOverlordsClear();
 }
 
-bool Sprite_CheckIfRoomIsClear() {  // 89af61
+bool Sprite_CheckIfRoomIsClear(void) {  // 89af61
   for (int i = 15; i >= 0; i--) {
     if (sprite_state[i] && !(sprite_flags4[i] & 0x40))
       return false;
@@ -3209,7 +3209,7 @@ bool Sprite_CheckIfRoomIsClear() {  // 89af61
   return Sprite_CheckIfOverlordsClear();
 }
 
-bool Sprite_CheckIfOverlordsClear() {  // 89af76
+bool Sprite_CheckIfOverlordsClear(void) {  // 89af76
   for (int i = 7; i >= 0; i--) {
     if (overlord_type[i] == 0x14 || overlord_type[i] == 0x18)
       return false;
@@ -3217,7 +3217,7 @@ bool Sprite_CheckIfOverlordsClear() {  // 89af76
   return true;
 }
 
-void Sprite_InitializeMirrorPortal() {  // 89af89
+void Sprite_InitializeMirrorPortal(void) {  // 89af89
   for (int k = 15; k >= 0; k--) {
     if (sprite_state[k] && sprite_type[k] == 0x6c)
       sprite_state[k] = 0;
@@ -3235,7 +3235,7 @@ void Sprite_InitializeMirrorPortal() {  // 89af89
   sprite_ignore_projectile[j] = 1;
 }
 
-void Sprite_InitializeSlots() {  // 89afd6
+void Sprite_InitializeSlots(void) {  // 89afd6
   for (int k = 15; k >= 0; k--) {
     uint8 st = sprite_state[k], ty = sprite_type[k];
     if (st != 0) {
@@ -3257,7 +3257,7 @@ void Sprite_InitializeSlots() {  // 89afd6
   }
 }
 
-void Garnish_ExecuteUpperSlots() {  // 89b08c
+void Garnish_ExecuteUpperSlots(void) {  // 89b08c
   HandleScreenFlash();
 
   if (garnish_active) {
@@ -3266,7 +3266,7 @@ void Garnish_ExecuteUpperSlots() {  // 89b08c
   }
 }
 
-void Garnish_ExecuteLowerSlots() {  // 89b097
+void Garnish_ExecuteLowerSlots(void) {  // 89b097
   if (garnish_active) {
     for (int i = 14; i >= 0; i--)
       Garnish_ExecuteSingle(i);
@@ -3538,7 +3538,7 @@ void Garnish02_MothulaBeamTrail(int k) {  // 89b6e1
                sprite_oam_flags[j] | sprite_obj_prio[j], 2);
 }
 
-void Dungeon_ResetSprites() {  // 89c114
+void Dungeon_ResetSprites(void) {  // 89c114
   Dungeon_CacheTransSprites();
   link_picking_throw_state = 0;
   link_state_bits = 0;
@@ -3557,7 +3557,7 @@ void Dungeon_ResetSprites() {  // 89c114
   Dungeon_LoadSprites();
 }
 
-void Dungeon_CacheTransSprites() {  // 89c176
+void Dungeon_CacheTransSprites(void) {  // 89c176
   if (!player_is_indoors)
     return;
   alt_sprites_flag = player_is_indoors;
@@ -3592,7 +3592,7 @@ void Dungeon_CacheTransSprites() {  // 89c176
   }
 }
 
-void Sprite_DisableAll() {  // 89c22f
+void Sprite_DisableAll(void) {  // 89c22f
   for (int k = 15; k >= 0; k--) {
     if (sprite_state[k] && (player_is_indoors || sprite_type[k] != 0x6c))
       sprite_state[k] = 0;
@@ -3620,7 +3620,7 @@ void Sprite_DisableAll() {  // 89c22f
     garnish_type[k] = 0;
 }
 
-void Dungeon_LoadSprites() {  // 89c290
+void Dungeon_LoadSprites(void) {  // 89c290
   const uint8 *src = kDungeonSprites + kDungeonSpriteOffs[dungeon_room_index2];
   byte_7E0FB1 = dungeon_room_index2 >> 3 & 0xfe;
   byte_7E0FB0 = (dungeon_room_index2 & 0xf) << 1;
@@ -3687,12 +3687,12 @@ void Dungeon_LoadSingleOverlord(const uint8 *src) {  // 89c3e8
   }
 }
 
-void Sprite_ResetAll() {  // 89c44e
+void Sprite_ResetAll(void) {  // 89c44e
   Sprite_DisableAll();
   Sprite_ResetAll_noDisable();
 }
 
-void Sprite_ResetAll_noDisable() {  // 89c452
+void Sprite_ResetAll_noDisable(void) {  // 89c452
   byte_7E0FDD = 0;
   sprite_alert_flag = 0;
   byte_7E0FFD = 0;
@@ -3707,18 +3707,18 @@ void Sprite_ResetAll_noDisable() {  // 89c452
   memset(dungeon_room_history, 0xff, 8);
 }
 
-void Sprite_ReloadAll_Overworld() {  // 89c499
+void Sprite_ReloadAll_Overworld(void) {  // 89c499
   Sprite_DisableAll();
   Sprite_OverworldReloadAll_justLoad();
 }
 
-void Sprite_OverworldReloadAll_justLoad() {  // 89c49d
+void Sprite_OverworldReloadAll_justLoad(void) {  // 89c49d
   Sprite_ResetAll_noDisable();
   Overworld_LoadSprites();
   Sprite_ActivateAllProxima();
 }
 
-void Overworld_LoadSprites() {  // 89c4ac
+void Overworld_LoadSprites(void) {  // 89c4ac
   sprcoll_x_base = (overworld_area_index & 7) << 9;
   sprcoll_y_base = ((overworld_area_index & 0x3f) >> 2 & 0xe) << 8;
   sprcoll_x_size = sprcoll_y_size = kOverworldAreaSprcollSizes[BYTE(overworld_area_index)] << 8;
@@ -3737,7 +3737,7 @@ void Overworld_LoadSprites() {  // 89c4ac
   }
 }
 
-void Sprite_ActivateAllProxima() {  // 89c55e
+void Sprite_ActivateAllProxima(void) {  // 89c55e
   uint16 bak0 = BG2HOFS_copy2;
   uint8 bak1 = byte_7E069E[1];
   byte_7E069E[1] = 0xff;
@@ -3752,7 +3752,7 @@ void Sprite_ActivateAllProxima() {  // 89c55e
   BG2HOFS_copy2 = bak0;
 }
 
-void Sprite_ProximityActivation() {  // 89c58f
+void Sprite_ProximityActivation(void) {  // 89c58f
   if (submodule_index != 0) {
     Sprite_ActivateWhenProximal();
     Sprite_ActivateWhenProximalBig();
@@ -3765,7 +3765,7 @@ void Sprite_ProximityActivation() {  // 89c58f
   }
 }
 
-void Sprite_ActivateWhenProximal() {  // 89c5bb
+void Sprite_ActivateWhenProximal(void) {  // 89c5bb
   if (byte_7E069E[1]) {
     int xt = (enhanced_features0 & kFeatures0_ExtendScreen64) ? 0x40 : 0;
     uint16 x = BG2HOFS_copy2 + (sign8(byte_7E069E[1]) ? -0x10 - xt : 0x110 + xt);
@@ -3775,7 +3775,7 @@ void Sprite_ActivateWhenProximal() {  // 89c5bb
   }
 }
 
-void Sprite_ActivateWhenProximalBig() {  // 89c5fa
+void Sprite_ActivateWhenProximalBig(void) {  // 89c5fa
   if (byte_7E069E[0]) {
     int xt = (enhanced_features0 & kFeatures0_ExtendScreen64) ? 0x40 : 0;
     uint16 x = BG2HOFS_copy2 - 0x30 - xt;
@@ -3865,7 +3865,7 @@ void SpriteExplode_SpawnEA(int k) {  // 89ee4c
   }
 }
 
-void Sprite_KillFriends() {  // 89ef56
+void Sprite_KillFriends(void) {  // 89ef56
   for(int j = 15; j >= 0; j--) {
     if (j != cur_object_index && sprite_state[j] && !(sprite_defl_bits[j] & 2) && sprite_type[j] != 0x7a) {
       sprite_state[j] = 6;
@@ -4067,7 +4067,7 @@ uint8 Oam_GetBufferPosition(uint8 num, uint8 y) {  // 8dbb0a
   return oam_cur_ptr;
 }
 
-void Sprite_NullifyHookshotDrag() {  // 8ff540
+void Sprite_NullifyHookshotDrag(void) {  // 8ff540
   for (int i = 4; i >= 0; i--) {
     if (!(ancilla_type[i] & 0x1f) && related_to_hookshot) {
       related_to_hookshot = 0;
@@ -4081,7 +4081,7 @@ void Sprite_NullifyHookshotDrag() {  // 8ff540
   HandleIndoorCameraAndDoors();
 }
 
-void Overworld_SubstituteAlternateSecret() {  // 9afbdb
+void Overworld_SubstituteAlternateSecret(void) {  // 9afbdb
   static const uint8 kSecretSubst_Tab0[64] = {
     0,  0, 0, 0, 0, 0, 0, 4,  0,  0, 0, 0, 0, 0, 0, 0,
     4,  4, 6, 4, 4, 6, 0, 0, 15, 15, 4, 5, 5, 4, 6, 6,
@@ -4127,7 +4127,7 @@ uint8 Sprite_BounceFromTileCollision(int k) {  // 9dc751
   return 0;
 }
 
-void ExecuteCachedSprites() {  // 9de9da
+void ExecuteCachedSprites(void) {  // 9de9da
   if (!player_is_indoors || submodule_index == 0 || submodule_index == 14 || alt_sprites_flag == 0) {
     alt_sprites_flag = 0;
     return;
@@ -4293,13 +4293,13 @@ void Sprite_BehaveAsBarrier(int k) {  // 9ef4f3
   sprite_flags4[k] = bak;
 }
 
-void Sprite_HaltAllMovement() {  // 9ef508
+void Sprite_HaltAllMovement(void) {  // 9ef508
   Sprite_NullifyHookshotDrag();
   link_speed_setting = 0;
   Link_CancelDash();
 }
 
-int ReleaseFairy() {  // 9efe33
+int ReleaseFairy(void) {  // 9efe33
   SpriteSpawnInfo info;
   int j = Sprite_SpawnDynamically(0, 0xe3, &info);
   if (j >= 0) {

@@ -16,7 +16,7 @@ uint8 g_ram[131072];
 
 uint32 g_wanted_zelda_features;
 
-static void Startup_InitializeMemory();
+static void Startup_InitializeMemory(void);
 
 typedef struct SimpleHdma {
   const uint8 *table;
@@ -137,7 +137,7 @@ static void SimpleHdma_DoLine(SimpleHdma *c) {
   c->rep_count--;
 }
 
-static void ConfigurePpuSideSpace() {
+static void ConfigurePpuSideSpace(void) {
   // Let PPU impl know about the maximum allowed extra space on the sides and bottom
   int extra_right = 0, extra_left = 0, extra_bottom = 0;
 //  printf("main %d, sub %d  (%d, %d, %d)\n", main_module_index, submodule_index, BG2HOFS_copy2, room_bounds_x.v[2 | (quadrant_fullsize_x >> 1)], quadrant_fullsize_x >> 1);
@@ -234,7 +234,7 @@ void HdmaSetup(uint32 addr6, uint32 addr7, uint8 transfer_unit, uint8 reg6, uint
   dma_write(dma, DAS70, indirect_bank);
 }
 
-static void ZeldaInitializationCode() {
+static void ZeldaInitializationCode(void) {
   zelda_snes_dummy_write(NMITIMEN, 0);
   zelda_snes_dummy_write(HDMAEN, 0);
   zelda_snes_dummy_write(MDMAEN, 0);
@@ -249,12 +249,12 @@ static void ZeldaInitializationCode() {
   zelda_snes_dummy_write(NMITIMEN, 0x81);
 }
 
-static void ClearOamBuffer() {  // 80841e
+static void ClearOamBuffer(void) {  // 80841e
   for (int i = 0; i < 128; i++)
     oam_buf[i].y = 0xf0;
 }
 
-static void ZeldaRunGameLoop() {
+static void ZeldaRunGameLoop(void) {
   frame_counter++;
   ClearOamBuffer();
   Module_MainRouting();
@@ -262,9 +262,9 @@ static void ZeldaRunGameLoop() {
   nmi_boolean = 0;
 }
 
-void ZeldaInitialize() {
+void ZeldaInitialize(void) {
   g_zenv.dma = dma_init(NULL);
-  g_zenv.ppu = ppu_init(NULL);
+  g_zenv.ppu = ppu_init();
   g_zenv.ram = g_ram;
   g_zenv.sram = (uint8*)calloc(8192, 1);
   g_zenv.vram = g_zenv.ppu->vram;
@@ -274,7 +274,7 @@ void ZeldaInitialize() {
   ppu_reset(g_zenv.ppu);
 }
 
-static void ZeldaRunPolyLoop() {
+static void ZeldaRunPolyLoop(void) {
   if (intro_did_run_step && !nmi_flag_update_polyhedral) {
     Poly_RunFrame();
     intro_did_run_step = 0;
@@ -311,7 +311,7 @@ void ZeldaSetupEmuCallbacks(uint8 *emu_ram, ZeldaRunFrameFunc *func, ZeldaSyncAl
   g_emu_syncall = sync_all;
 }
 
-static void EmuSynchronizeWholeState() {
+static void EmuSynchronizeWholeState(void) {
   if (g_emu_syncall)
     g_emu_syncall();
 }

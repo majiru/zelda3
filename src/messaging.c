@@ -223,8 +223,8 @@ static PlayerHandlerFunc *const kModule_Death[16] = {
   &GameOver_ResituateLink,
 };
 static const uint8 kLocationMenuStartPos[3] = {0, 1, 6};
-static void RunInterface();
-const uint8 *GetDungmapFloorLayout() {
+static void RunInterface(void);
+const uint8 *GetDungmapFloorLayout(void) {
   return kDungMap_FloorLayout(cur_palace_index_x2 >> 1).ptr;
 }
 
@@ -233,28 +233,28 @@ uint8 GetOtherDungmapInfo(int count) {
   return p[count];
 }
 
-void DungMap_4() {
+void DungMap_4(void) {
   BG2VOFS_copy2 += dungmap_var4;
   dungmap_var5 -= dungmap_var4;
   if (!--bottle_menu_expand_row)
     overworld_map_state--;
 }
 
-void Module_Messaging_6() {
+void Module_Messaging_6(void) {
   assert(0);
 }
 
-void OverworldMap_SetupHdma() {
+void OverworldMap_SetupHdma(void) {
   static const uint32 kOverworldMap_TableLow[2] = {0xabdcf, 0xabdd6};
   uint32 a = kOverworldMap_TableLow[overworld_map_flags];
   HdmaSetup(a, a, 0x42, (uint8)M7A, (uint8)M7D, 10);
 }
 
-const uint8 *GetLightOverworldTilemap() {
+const uint8 *GetLightOverworldTilemap(void) {
   return kLightOverworldTilemap;
 }
 
-void SaveGameFile() {  // 80894a
+void SaveGameFile(void) {  // 80894a
   int offs = ((srm_var1 >> 1) - 1) * 0x500;
   memcpy(g_zenv.sram + offs, save_dung_info, 0x500);
   memcpy(g_zenv.sram + offs + 0xf00, save_dung_info, 0x500);
@@ -267,14 +267,14 @@ void SaveGameFile() {  // 80894a
   ZeldaWriteSram();
 }
 
-void TransferMode7Characters() {  // 80e399
+void TransferMode7Characters(void) {  // 80e399
   uint16 *dst = g_zenv.vram;
   const uint8 *src = kOverworldMapGfx;
   for (int i = 0; i != 0x4000; i++)
     HIBYTE(dst[i]) = src[i];
 }
 
-void Module0E_Interface() {  // 80f800
+void Module0E_Interface(void) {  // 80f800
   bool skip_run = false;
   if (player_is_indoors) {
     if (submodule_index == 3) {
@@ -301,15 +301,15 @@ void Module0E_Interface() {  // 80f800
   BG1VOFS_copy = BG1VOFS_copy2 + bg1_y_offset;
 }
 
-void Module_Messaging_0() {  // 80f875
+void Module_Messaging_0(void) {  // 80f875
   assert(0);
 }
 
-static void RunInterface() {  // 80f89a
+static void RunInterface(void) {  // 80f89a
   kMessagingSubmodules[submodule_index]();
 }
 
-void Module0E_05_DesertPrayer() {  // 80f8b1
+void Module0E_05_DesertPrayer(void) {  // 80f8b1
   switch (subsubmodule_index) {
   case 0: ResetTransitionPropsAndAdvance_ResetInterface(); break;
   case 1: ApplyPaletteFilter_bounce(); break;
@@ -328,7 +328,7 @@ void Module0E_05_DesertPrayer() {  // 80f8b1
   }
 }
 
-void Module0E_04_RedPotion() {  // 80f8fb
+void Module0E_04_RedPotion(void) {  // 80f8fb
   if (Hud_RefillHealth()) {
     button_mask_b_y &= ~0x40;
     flag_update_hud_in_nmi++;
@@ -337,7 +337,7 @@ void Module0E_04_RedPotion() {  // 80f8fb
   }
 }
 
-void Module0E_08_GreenPotion() {  // 80f911
+void Module0E_08_GreenPotion(void) {  // 80f911
   if (Hud_RefillMagicPower()) {
     button_mask_b_y &= ~0x40;
     flag_update_hud_in_nmi++;
@@ -346,14 +346,14 @@ void Module0E_08_GreenPotion() {  // 80f911
   }
 }
 
-void Module0E_09_BluePotion() {  // 80f918
+void Module0E_09_BluePotion(void) {  // 80f918
   if (Hud_RefillHealth())
     submodule_index = 8;
   if (Hud_RefillMagicPower())
     submodule_index = 4;
 }
 
-void Module0E_0B_SaveMenu() {  // 80f9fa
+void Module0E_0B_SaveMenu(void) {  // 80f9fa
   // This is the continue / save and quit menu
   if (!player_is_indoors)
     Overworld_DwDeathMountainPaletteAnimation();
@@ -379,7 +379,7 @@ void Module0E_0B_SaveMenu() {  // 80f9fa
   }
 }
 
-void Module1B_SpawnSelect() {  // 828586
+void Module1B_SpawnSelect(void) {  // 828586
   RenderText();
   if (submodule_index)
     return;
@@ -393,7 +393,7 @@ void Module1B_SpawnSelect() {  // 828586
   which_starting_point = bak;
 }
 
-void CleanUpAndPrepDesertPrayerHDMA() {  // 82c7b8
+void CleanUpAndPrepDesertPrayerHDMA(void) {  // 82c7b8
   HdmaSetup(0, 0x2c80c, 0x41, 0, (uint8)WH0, 0);
 
   W12SEL_copy = 0x33;
@@ -405,7 +405,7 @@ void CleanUpAndPrepDesertPrayerHDMA() {  // 82c7b8
   memset(hdma_table_dynamic, 0, 240 * sizeof(uint16));
 }
 
-void DesertPrayer_InitializeIrisHDMA() {  // 87ea06
+void DesertPrayer_InitializeIrisHDMA(void) {  // 87ea06
   CleanUpAndPrepDesertPrayerHDMA();
   spotlight_var1 = 0x26;
   BYTE(spotlight_var2) = 0;
@@ -413,7 +413,7 @@ void DesertPrayer_InitializeIrisHDMA() {  // 87ea06
   subsubmodule_index++;
 }
 
-void DesertPrayer_BuildIrisHDMATable() {  // 87ea27
+void DesertPrayer_BuildIrisHDMATable(void) {  // 87ea27
   uint16 r14 = link_y_coord - BG2VOFS_copy2 + 12;
   spotlight_y_lower = r14 - spotlight_var1;
   uint16 r4 = sign16(spotlight_y_lower) ? spotlight_y_lower : 0;
@@ -491,7 +491,7 @@ void DesertPrayer_BuildIrisHDMATable() {  // 87ea27
   }
 }
 
-Pair16U DesertHDMA_CalculateIrisShapeLine() {  // 87ecdc
+Pair16U DesertHDMA_CalculateIrisShapeLine(void) {  // 87ecdc
   static const uint8 kPrayingScene_Tab1[129] = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfe, 0xfe, 0xfe, 0xfe,
     0xfd, 0xfd, 0xfd, 0xfd, 0xfc, 0xfc, 0xfc, 0xfb, 0xfb, 0xfb, 0xfa, 0xfa, 0xf9, 0xf9, 0xf8, 0xf8,
@@ -523,7 +523,7 @@ Pair16U DesertHDMA_CalculateIrisShapeLine() {  // 87ecdc
   return ret;
 }
 
-void Animate_GAMEOVER_Letters() {  // 88f4ca
+void Animate_GAMEOVER_Letters(void) {  // 88f4ca
   switch (ancilla_type[0]) {
   case 0:
     submodule_index++;
@@ -540,7 +540,7 @@ void Animate_GAMEOVER_Letters() {  // 88f4ca
   }
 }
 
-void GameOverText_SweepLeft() {  // 88f4f6
+void GameOverText_SweepLeft(void) {  // 88f4f6
   static const uint8 kGameOverText_Tab1[8] = {0x40, 0x50, 0x60, 0x70, 0x88, 0x98, 0xa8, 0x40};
 
   int k = flag_for_boomerang_in_place;
@@ -569,7 +569,7 @@ draw:
   GameOverText_Draw();
 }
 
-void GameOverText_UnfurlRight() {  // 88f56d
+void GameOverText_UnfurlRight(void) {  // 88f56d
   static const uint8 kGameOverText_Tab2[8] = {0x58, 0x60, 0x68, 0x70, 0x88, 0x90, 0x98, 0xa0};
 
   int k = flag_for_boomerang_in_place, end;
@@ -595,18 +595,18 @@ draw:
   GameOverText_Draw();
 }
 
-void Module12_GameOver() {  // 89f290
+void Module12_GameOver(void) {  // 89f290
   kModule_Death[submodule_index]();
   if (submodule_index != 9)
     LinkOam_Main();
 }
 
-void GameOver_AdvanceImmediately() {  // 89f2a2
+void GameOver_AdvanceImmediately(void) {  // 89f2a2
   submodule_index++;
   Death_Func1();
 }
 
-void Death_Func1() {  // 89f2a4
+void Death_Func1(void) {  // 89f2a4
   music_unk1_death = music_unk1;
   sound_effect_ambient_last_death = sound_effect_ambient_last;
   music_control = 241;
@@ -632,7 +632,7 @@ void Death_Func1() {  // 89f2a4
   submodule_index++;
 }
 
-void GameOver_DelayBeforeIris() {  // 89f33b
+void GameOver_DelayBeforeIris(void) {  // 89f33b
   if (--some_menu_ctr)
     return;
   Death_InitializeGameOverLetters();
@@ -642,7 +642,7 @@ void GameOver_DelayBeforeIris() {  // 89f33b
   submodule_index++;
 }
 
-void GameOver_IrisWipe() {  // 89f350
+void GameOver_IrisWipe(void) {  // 89f350
   PaletteFilter_RestoreBGSubstractiveStrict();
   main_palette_buffer[0] = main_palette_buffer[32];
   uint8 bak = main_module_index;
@@ -679,7 +679,7 @@ void GameOver_IrisWipe() {  // 89f350
   Death_PrepFaint();
 }
 
-void GameOver_SplatAndFade() {  // 89f3de
+void GameOver_SplatAndFade(void) {  // 89f3de
   if (some_menu_ctr) {
     some_menu_ctr--;
     return;
@@ -710,7 +710,7 @@ void GameOver_SplatAndFade() {  // 89f3de
   submodule_index++;
 }
 
-void Death_Func6() {  // 89f458
+void Death_Func6(void) {  // 89f458
   some_menu_ctr = 12;
   load_chr_halfslot_even_odd = 15;
   Graphics_LoadChrHalfSlot();
@@ -724,15 +724,15 @@ void Death_Func6() {  // 89f458
   Death_PlayerSwoon();
 }
 
-void Death_Func4() {  // 89f47e
+void Death_Func4(void) {  // 89f47e
   Death_PlayerSwoon();
 }
 
-void Animate_GAMEOVER_Letters_bounce() {  // 89f483
+void Animate_GAMEOVER_Letters_bounce(void) {  // 89f483
   Animate_GAMEOVER_Letters();
 }
 
-void GameOver_Finalize_GAMEOVR() {  // 89f488
+void GameOver_Finalize_GAMEOVR(void) {  // 89f488
   Animate_GAMEOVER_Letters();
   uint8 bak1 = main_module_index;
   uint8 bak2 = submodule_index;
@@ -744,7 +744,7 @@ void GameOver_Finalize_GAMEOVR() {  // 89f488
   music_control = 11;
 }
 
-void GameOver_SaveAndOrContinue() {  // 89f4c1
+void GameOver_SaveAndOrContinue(void) {  // 89f4c1
   GameOver_AnimateChoiceFairy();
   if (ancilla_type)
     Animate_GAMEOVER_Letters();
@@ -851,22 +851,22 @@ void Death_Func15(bool count_as_death) {  // 89f50f
   }
 }
 
-void GameOver_AnimateChoiceFairy() {  // 89f67a
+void GameOver_AnimateChoiceFairy(void) {  // 89f67a
   SetOamPlain(&oam_buf[0x14], 0x34, kDeath_SprY0[subsubmodule_index], kDeath_SprChar0[frame_counter >> 3 & 1], 0x78, 2);
 }
 
-void GameOver_InitializeRevivalFairy() {  // 89f6a4
+void GameOver_InitializeRevivalFairy(void) {  // 89f6a4
   ConfigureRevivalAncillae();
   link_hearts_filler = 56;
   submodule_index += 1;
   overworld_map_state = 0;
 }
 
-void RevivalFairy_Main_bounce() {  // 89f6b4
+void RevivalFairy_Main_bounce(void) {  // 89f6b4
   RevivalFairy_Main();
 }
 
-void GameOver_RiseALittle() {  // 89f6b9
+void GameOver_RiseALittle(void) {  // 89f6b9
   if (link_hearts_filler == 0) {
     memcpy(aux_palette_buffer, mapbak_palette, 256);
     memset(main_palette_buffer + 32, 0, 192);
@@ -880,7 +880,7 @@ void GameOver_RiseALittle() {  // 89f6b9
   Hud_RefillLogic();
 }
 
-void GameOver_Restore0D() {  // 89f71d
+void GameOver_Restore0D(void) {  // 89f71d
   if (!is_doing_heart_animation) {
     load_chr_halfslot_even_odd = 1;
     Graphics_LoadChrHalfSlot();
@@ -891,13 +891,13 @@ void GameOver_Restore0D() {  // 89f71d
   Hud_RefillLogic();
 }
 
-void GameOver_Restore0E() {  // 89f735
+void GameOver_Restore0E(void) {  // 89f735
   Graphics_LoadChrHalfSlot();
   TS_copy = mapbak_TS;
   submodule_index++;
 }
 
-void GameOver_ResituateLink() {  // 89f742
+void GameOver_ResituateLink(void) {  // 89f742
   PaletteFilter_RestoreBGAdditiveStrict();
   main_palette_buffer[0] = main_palette_buffer[32];
   if (BYTE(palette_filter_countdown) != 32)
@@ -914,7 +914,7 @@ void GameOver_ResituateLink() {  // 89f742
   darkening_or_lightening_screen = mapbak_bg1_y_offset;
 }
 
-void Module0E_0A_FluteMenu() {  // 8ab730
+void Module0E_0A_FluteMenu(void) {  // 8ab730
   switch (overworld_map_state) {
   case 0:
     WorldMap_FadeOut();
@@ -953,7 +953,7 @@ void Module0E_0A_FluteMenu() {  // 8ab730
   }
 }
 
-void FluteMenu_HandleSelection() {  // 8ab78b
+void FluteMenu_HandleSelection(void) {  // 8ab78b
   Point16U pt;
 
   if (some_menu_ctr == 0) {
@@ -998,7 +998,7 @@ void FluteMenu_HandleSelection() {  // 8ab78b
   link_y_coord_spexit = ybak;
 }
 
-void FluteMenu_LoadSelectedScreen() {  // 8ab8c5
+void FluteMenu_LoadSelectedScreen(void) {  // 8ab8c5
   save_ow_event_info[0x3b] &= ~0x20;
   save_ow_event_info[0x7b] &= ~0x20;
   save_dung_info[267] &= ~0x80;
@@ -1025,7 +1025,7 @@ void FluteMenu_LoadSelectedScreen() {  // 8ab8c5
   music_control = ZeldaIsPlayingMusicTrack(m & 0xf) ? 0xf3 : m & 0xf;
 }
 
-void Overworld_LoadOverlayAndMap() {  // 8ab948
+void Overworld_LoadOverlayAndMap(void) {  // 8ab948
   uint16 bak1 = WORD(main_module_index);
   uint16 bak2 = WORD(overworld_map_state);
   Overworld_LoadAndBuildScreen();
@@ -1033,7 +1033,7 @@ void Overworld_LoadOverlayAndMap() {  // 8ab948
   WORD(main_module_index) = bak1;
 }
 
-void FluteMenu_FadeInAndQuack() {  // 8ab964
+void FluteMenu_FadeInAndQuack(void) {  // 8ab964
   if (++INIDISP_copy == 15) {
     BirdTravel_Finish_Doit();
   } else {
@@ -1041,7 +1041,7 @@ void FluteMenu_FadeInAndQuack() {  // 8ab964
   }
 }
 
-void BirdTravel_Finish_Doit() {  // 8ab96c
+void BirdTravel_Finish_Doit(void) {  // 8ab96c
   overworld_map_state = 0;
   subsubmodule_index = 0;
   main_module_index = saved_module_for_menu;
@@ -1051,7 +1051,7 @@ void BirdTravel_Finish_Doit() {  // 8ab96c
   Sprite_Main();
 }
 
-void Messaging_OverworldMap() {  // 8ab98b
+void Messaging_OverworldMap(void) {  // 8ab98b
   switch (overworld_map_state) {
   case 0:
     WorldMap_FadeOut();
@@ -1080,7 +1080,7 @@ void Messaging_OverworldMap() {  // 8ab98b
   }
 }
 
-void WorldMap_FadeOut() {  // 8ab9a3
+void WorldMap_FadeOut(void) {  // 8ab9a3
   if (--INIDISP_copy)
     return;
   mapbak_HDMAEN = HDMAEN_copy;
@@ -1110,7 +1110,7 @@ void WorldMap_FadeOut() {  // 8ab9a3
   BGMODE_copy = 7;
 }
 
-void WorldMap_LoadLightWorldMap() {  // 8aba30
+void WorldMap_LoadLightWorldMap(void) {  // 8aba30
   WorldMap_FillTilemapWithEF();
   TM_copy = 0x11;
   TS_copy = 0;
@@ -1125,7 +1125,7 @@ void WorldMap_LoadLightWorldMap() {  // 8aba30
   overworld_map_state++;
 }
 
-void WorldMap_LoadDarkWorldMap() {  // 8aba7a
+void WorldMap_LoadDarkWorldMap(void) {  // 8aba7a
   if (overworld_screen_index & 0x40) {
     memcpy(&uvram, kDarkOverworldTilemap, 1024);
     nmi_subroutine_index = 21;
@@ -1133,26 +1133,26 @@ void WorldMap_LoadDarkWorldMap() {  // 8aba7a
   overworld_map_state++;
 }
 
-void WorldMap_LoadSpriteGFX() {  // 8aba9a
+void WorldMap_LoadSpriteGFX(void) {  // 8aba9a
   load_chr_halfslot_even_odd = 0x10;
   Graphics_LoadChrHalfSlot();
   load_chr_halfslot_even_odd = 0;
   overworld_map_state++;
 }
 
-void WorldMap_Brighten() {  // 8abaaa
+void WorldMap_Brighten(void) {  // 8abaaa
   if (++INIDISP_copy == 15)
     overworld_map_state++;
 }
 
-bool DidPressButtonForMap() {
+bool DidPressButtonForMap(void) {
   if (hud_cur_item_x != 0)
     return filtered_joypad_H & 0x20;  // select
   else
     return filtered_joypad_L & 0x40;  // x
 }
 
-void WorldMap_PlayerControl() {  // 8abae6
+void WorldMap_PlayerControl(void) {  // 8abae6
   if (overworld_map_flags & 0x80) {
     overworld_map_flags &= ~0x80;
     OverworldMap_SetupHdma();
@@ -1200,7 +1200,7 @@ void WorldMap_PlayerControl() {  // 8abae6
   WorldMap_HandleSprites();
 }
 
-void WorldMap_RestoreGraphics() {  // 8abbd6
+void WorldMap_RestoreGraphics(void) {  // 8abbd6
   if (--INIDISP_copy)
     return;
   EnableForceBlank();
@@ -1216,14 +1216,14 @@ void WorldMap_RestoreGraphics() {  // 8abbd6
   Attract_SetUpConclusionHDMA();
 }
 
-void Attract_SetUpConclusionHDMA() {  // 8abc33
+void Attract_SetUpConclusionHDMA(void) {  // 8abc33
   HdmaSetup(0xABDDD, 0xABDDD, 0x42, (uint8)M7A, (uint8)M7D, 0);
   HDMAEN_copy = 0x80;
   BGMODE_copy = 9;
   nmi_disable_core_updates = 0;
 }
 
-void WorldMap_ExitMap() {  // 8abc54
+void WorldMap_ExitMap(void) {  // 8abc54
   overworld_palette_aux_or_main = 0;
   hud_palette = 0;
   InitializeTilesets();
@@ -1240,7 +1240,7 @@ void WorldMap_ExitMap() {  // 8abc54
   music_control = 0xf3;
 }
 
-void WorldMap_SetUpHDMA() {  // 8abc96
+void WorldMap_SetUpHDMA(void) {  // 8abc96
   BG1HOFS_copy2 = 0x80;
   BG1VOFS_copy2 = 0xc8;
   M7Y_copy = 0x1c9;
@@ -1275,13 +1275,13 @@ void WorldMap_SetUpHDMA() {  // 8abc96
   }
 }
 
-void WorldMap_FillTilemapWithEF() {  // 8abda5
+void WorldMap_FillTilemapWithEF(void) {  // 8abda5
   uint16 *dst = g_zenv.vram;
   for (int i = 0; i != 0x4000; i++)
     BYTE(dst[i]) = 0xef;
 }
 
-void WorldMap_HandleSprites() {  // 8abf66
+void WorldMap_HandleSprites(void) {  // 8abf66
   Point16U pt;
 
   if (frame_counter & 0x10 && WorldMap_CalculateOamCoordinates(&pt))
@@ -1518,15 +1518,15 @@ bool OverworldMap_CheckForCrystal(int k) {  // 8ac5c6
   return (savegame_map_icons_indicator == 7) && (link_has_crystals & kCrystalBitMask[k]) != 0;
 }
 
-void Module0E_03_DungeonMap() {  // 8ae0b0
+void Module0E_03_DungeonMap(void) {  // 8ae0b0
   kDungMapSubmodules[overworld_map_state]();
 }
 
-void Module0E_03_01_DrawMap() {  // 8ae0dc
+void Module0E_03_01_DrawMap(void) {  // 8ae0dc
   kDungMapInit[dungmap_init_state]();
 }
 
-void Module0E_03_01_00_PrepMapGraphics() {  // 8ae0e4
+void Module0E_03_01_00_PrepMapGraphics(void) {  // 8ae0e4
   uint8 hdmaen_bak = HDMAEN_copy;
   HDMAEN_copy = 0;
   mapbak_main_tile_theme_index = main_tile_theme_index;
@@ -1554,7 +1554,7 @@ void Module0E_03_01_00_PrepMapGraphics() {  // 8ae0e4
   nmi_disable_core_updates = 9;
 }
 
-void Module0E_03_01_01_DrawLEVEL() {  // 8ae1a4
+void Module0E_03_01_01_DrawLEVEL(void) {  // 8ae1a4
   // Display FLOOR instead of MAP
   int i = kDungMap_Tab0[cur_palace_index_x2 >> 1] >> 1;
   if (i >= 0) {
@@ -1571,7 +1571,7 @@ void Module0E_03_01_01_DrawLEVEL() {  // 8ae1a4
   dungmap_init_state++;
 }
 
-void Module0E_03_01_02_DrawFloorsBackdrop() {  // 8ae1f3
+void Module0E_03_01_02_DrawFloorsBackdrop(void) {  // 8ae1f3
   int offs = 0;
   uint16 t5 = kDungMap_Tab5[cur_palace_index_x2 >> 1];
   if (t5 & 0x100) {
@@ -1623,7 +1623,7 @@ loop2:
   vram_upload_offset = offs * 2;
 }
 
-void Module0E_03_01_03_DrawRooms() {  // 8ae384
+void Module0E_03_01_03_DrawRooms(void) {  // 8ae384
   dungmap_var2 = 0;
   dungmap_idx = 0;
   uint8 t = -(kDungMap_Tab5[cur_palace_index_x2 >> 1] & 0xf);
@@ -1772,7 +1772,7 @@ void DungeonMap_DrawSingleRowOfRooms(int i, int arg_x) {  // 8ae5bc
   }
 }
 
-void DungeonMap_DrawRoomMarkers() {  // 8ae823
+void DungeonMap_DrawRoomMarkers(void) {  // 8ae823
   int dung = cur_palace_index_x2 >> 1;
   uint8 t5 = (kDungMap_Tab5[dung] & 0xf);
   uint8 floor1 = t5 + dung_cur_floor;
@@ -1824,19 +1824,19 @@ void DungeonMap_DrawRoomMarkers() {  // 8ae823
   dungmap_init_state = 0;
 }
 
-void DungeonMap_HandleInputAndSprites() {  // 8ae954
+void DungeonMap_HandleInputAndSprites(void) {  // 8ae954
   DungeonMap_HandleInput();
   DungeonMap_DrawSprites();
 }
 
-static inline bool WantExitDungeonMap() {
+static inline bool WantExitDungeonMap(void) {
   if (hud_cur_item_x != 0)
     return filtered_joypad_H & 0x20;  // Select
   else
     return filtered_joypad_L & 0x40;  // X
 }
 
-void DungeonMap_HandleInput() {  // 8ae95b
+void DungeonMap_HandleInput(void) {  // 8ae95b
   if (WantExitDungeonMap()) {
     overworld_map_state += 2;
     dungmap_init_state = 0;
@@ -1845,13 +1845,13 @@ void DungeonMap_HandleInput() {  // 8ae95b
   }
 }
 
-void DungeonMap_HandleMovementInput() {  // 8ae979
+void DungeonMap_HandleMovementInput(void) {  // 8ae979
   DungeonMap_HandleFloorSelect();
   if (dungmap_var2)
     DungeonMap_ScrollFloors();
 }
 
-void DungeonMap_HandleFloorSelect() {  // 8ae986
+void DungeonMap_HandleFloorSelect(void) {  // 8ae986
   uint8 r2 = (kDungMap_Tab5[cur_palace_index_x2 >> 1] >> 4 & 0xf);
   uint8 r3 = (kDungMap_Tab5[cur_palace_index_x2 >> 1] & 0xf);
   if (r2 + r3 < 3 || dungmap_var2 || !(joypad1H_last & 0xc))
@@ -1884,7 +1884,7 @@ void DungeonMap_HandleFloorSelect() {  // 8ae986
   nmi_subroutine_index = 8;
 }
 
-void DungeonMap_ScrollFloors() {  // 8aea7f
+void DungeonMap_ScrollFloors(void) {  // 8aea7f
   int x = WORD(g_ram[10]) >> 3 & 1;
   dungmap_var5 += kDungMap_Tab39[x];
   dungmap_var8 += kDungMap_Tab39[x];
@@ -1893,7 +1893,7 @@ void DungeonMap_ScrollFloors() {  // 8aea7f
     dungmap_var2 = 0;
 }
 
-void DungeonMap_DrawSprites() {  // 8aeab2
+void DungeonMap_DrawSprites(void) {  // 8aeab2
   int dung = cur_palace_index_x2 >> 1;
   uint8 r2 = (kDungMap_Tab5[dung] & 0xf);
   uint8 floor = r2 + dung_cur_floor;
@@ -1966,7 +1966,7 @@ int DungeonMap_DrawFloorNumberObjects(int spr_pos) {  // 8aec0a
   return spr_pos;
 }
 
-void DungeonMap_DrawFloorBlinker() {  // 8aeccf
+void DungeonMap_DrawFloorBlinker(void) {  // 8aeccf
   uint8 floor = dungmap_cur_floor;
   uint8 t5 = kDungMap_Tab5[cur_palace_index_x2 >> 1];
   uint8 flag = ((t5 >> 4 & 0xf) + (t5 & 0xf) != 1);
@@ -2028,7 +2028,7 @@ int DungeonMap_DrawBossIconByFloor(int spr_pos) {  // 8aee95
   return spr_pos + 1;
 }
 
-void DungeonMap_RecoverGFX() {  // 8aef19
+void DungeonMap_RecoverGFX(void) {  // 8aef19
   uint8 hdmaen_bak = HDMAEN_copy;
   HDMAEN_copy = 0;
   EraseTileMaps_normal();
@@ -2070,12 +2070,12 @@ void DungeonMap_RecoverGFX() {  // 8aef19
   nmi_disable_core_updates = 0;
 }
 
-void ToggleStarTilesAndAdvance() {  // 8aefc9
+void ToggleStarTilesAndAdvance(void) {  // 8aefc9
   Dungeon_RestoreStarTileChr();
   overworld_map_state++;
 }
 
-void Death_InitializeGameOverLetters() {  // 8afe20
+void Death_InitializeGameOverLetters(void) {  // 8afe20
   flag_for_boomerang_in_place = 0;
   for (int i = 0; i < 8; i++) {
     ancilla_x_lo[i] = 0xb0;
@@ -2085,7 +2085,7 @@ void Death_InitializeGameOverLetters() {  // 8afe20
   hookshot_effect_index = 6;
 }
 
-void CopySaveToWRAM() {  // 8ccfbb
+void CopySaveToWRAM(void) {  // 8ccfbb
   int k = 0xf;
   bird_travel_x_hi[k] = 0;
   bird_travel_y_hi[k] = 0;
@@ -2118,11 +2118,11 @@ void CopySaveToWRAM() {  // 8ccfbb
   hud_palette = 0;
 }
 
-void RenderText() {  // 8ec440
+void RenderText(void) {  // 8ec440
   kMessaging_Text[messaging_module]();
 }
 
-void RenderText_PostDeathSaveOptions() {  // 8ec455
+void RenderText_PostDeathSaveOptions(void) {  // 8ec455
   dialogue_message_index = 3;
   Text_Initialize_initModuleStateLoop();
   text_msgbox_topleft = 0x61e8;
@@ -2131,14 +2131,14 @@ void RenderText_PostDeathSaveOptions() {  // 8ec455
     Text_Render();
 }
 
-void Text_Initialize() {  // 8ec483
+void Text_Initialize(void) {  // 8ec483
   if (main_module_index == 20)
     ResetHUDPalettes4and5();
   Attract_DecompressStoryGFX();
   Text_Initialize_initModuleStateLoop();
 }
 
-void Text_Initialize_initModuleStateLoop() {  // 8ec493
+void Text_Initialize_initModuleStateLoop(void) {  // 8ec493
   memcpy(&text_msgbox_topleft_copy, kText_InitializationData, 32);
   Text_InitVwfState();
   RenderText_SetDefaultWindowPosition();
@@ -2149,7 +2149,7 @@ void Text_Initialize_initModuleStateLoop() {  // 8ec493
   nmi_disable_core_updates = 2;
 }
 
-void Text_InitVwfState() {  // 8ec4c9
+void Text_InitVwfState(void) {  // 8ec4c9
   vwf_curline = 0;
   vwf_flag_next_line = 0;
   vwf_var1 = 0;
@@ -2262,7 +2262,7 @@ uint32 Text_DecodeCmd(uint8 a, const uint8 *src) {
 }
 
 // Perform initial parsing of the string, expanding words, processing some commands, etc.
-void Text_LoadCharacterBuffer() {  // 8ec4e2
+void Text_LoadCharacterBuffer(void) {  // 8ec4e2
   MemBlk dictionary = FindIndexInMemblk(g_zenv.dialogue_blk, 0);
   MemBlk dialogue = FindIndexInMemblk(g_zenv.dialogue_blk, 1);
   MemBlk text_str = FindIndexInMemblk(dialogue, dialogue_message_index);
@@ -2337,11 +2337,11 @@ uint8 Text_FilterPlayerNameCharacters(uint8 a) {  // 8ec639
   return a;
 }
 
-void Text_Render() {  // 8ec8d9
+void Text_Render(void) {  // 8ec8d9
   kText_Render[text_render_state]();
 }
 
-void RenderText_Draw_Border() {  // 8ec8ea
+void RenderText_Draw_Border(void) {  // 8ec8ea
   RenderText_DrawBorderInitialize();
   uint16 *d = RenderText_DrawBorderRow(vram_upload_data, 0);
   for(int i = 0; i != 6; i++)
@@ -2351,7 +2351,7 @@ void RenderText_Draw_Border() {  // 8ec8ea
   text_render_state = 2;
 }
 
-void RenderText_Draw_BorderIncremental() {  // 8ec919
+void RenderText_Draw_BorderIncremental(void) {  // 8ec919
   nmi_load_bg_from_vram = 1;
   uint8 a = text_incremental_state;
   uint16 *d = vram_upload_data;
@@ -2375,12 +2375,12 @@ void RenderText_Draw_BorderIncremental() {  // 8ec919
   }
 }
 
-void RenderText_Draw_CharacterTilemap() {  // 8ec97d
+void RenderText_Draw_CharacterTilemap(void) {  // 8ec97d
   Text_BuildCharacterTilemap();
   text_render_state++;
 }
 
-void RenderText_Draw_MessageCharacters() {  // 8ec984
+void RenderText_Draw_MessageCharacters(void) {  // 8ec984
 RESTART:;
   uint32 cmd = Text_DecodeCmd(messaging_text_buffer[dialogue_msg_read_pos],
       &messaging_text_buffer[dialogue_msg_read_pos + 1]);
@@ -2496,7 +2496,7 @@ RESTART:;
   nmi_disable_core_updates = 2;
 }
 
-void RenderText_Draw_Finish() {  // 8eca35
+void RenderText_Draw_Finish(void) {  // 8eca35
   RenderText_DrawBorderInitialize();
   uint16 *d = vram_upload_data;
   d[0] = swap16(text_msgbox_topleft_copy);
@@ -2579,7 +2579,7 @@ void VWF_RenderSingle(int c) {  // 8ecab8
   }
 }
 
-void RenderText_Draw_Choose2LowOr3() {  // 8ecd1a
+void RenderText_Draw_Choose2LowOr3(void) {  // 8ecd1a
   if (text_wait_countdown2 != 0) {
     if (--text_wait_countdown2 == 1)
       sound_effect_2 = 36;
@@ -2598,7 +2598,7 @@ void RenderText_Draw_Choose2LowOr3() {  // 8ecd1a
   }
 }
 
-void RenderText_Draw_ChooseItem() {  // 8ecd88
+void RenderText_Draw_ChooseItem(void) {  // 8ecd88
   if (text_wait_countdown2 != 0) {
     if (--text_wait_countdown2 == 1)
       RenderText_FindYItem_Next();
@@ -2618,7 +2618,7 @@ void RenderText_Draw_ChooseItem() {  // 8ecd88
   }
 }
 
-void RenderText_FindYItem_Previous() {  // 8ecdc8
+void RenderText_FindYItem_Previous(void) {  // 8ecdc8
   for (;;) {
     uint8 x = choice_in_multiselect_box;
     if (sign8(x))
@@ -2630,7 +2630,7 @@ void RenderText_FindYItem_Previous() {  // 8ecdc8
   RenderText_DrawSelectedYItem();
 }
 
-void RenderText_FindYItem_Next() {  // 8ecded
+void RenderText_FindYItem_Next(void) {  // 8ecded
   for (;;) {
     uint8 x = choice_in_multiselect_box;
     if (x >= 32)
@@ -2642,7 +2642,7 @@ void RenderText_FindYItem_Next() {  // 8ecded
   RenderText_DrawSelectedYItem();
 }
 
-void RenderText_DrawSelectedYItem() {  // 8ece14
+void RenderText_DrawSelectedYItem(void) {  // 8ece14
   int item = choice_in_multiselect_box;
   const uint16 *p = Hud_GetItemBoxPtr(item);
   p += ((item == 3 || item == 32) ? 1 : (&link_item_bow)[item]) * 4;
@@ -2651,7 +2651,7 @@ void RenderText_DrawSelectedYItem() {  // 8ece14
   memcpy(vwf300 + 0xec, p + 2, 4);
 }
 
-void RenderText_Draw_Choose2HiOr3() {  // 8ece83
+void RenderText_Draw_Choose2HiOr3(void) {  // 8ece83
   if (text_wait_countdown2 != 0) {
     if (--text_wait_countdown2 == 1)
       sound_effect_2 = 36;
@@ -2670,7 +2670,7 @@ void RenderText_Draw_Choose2HiOr3() {  // 8ece83
   }
 }
 
-void RenderText_Draw_Choose3() {  // 8ecef7
+void RenderText_Draw_Choose3(void) {  // 8ecef7
   uint8 y;
   if (text_wait_countdown2 != 0) {
     if (--text_wait_countdown2 == 1)
@@ -2692,7 +2692,7 @@ void RenderText_Draw_Choose3() {  // 8ecef7
   }
 }
 
-void RenderText_Draw_Choose1Or2() {  // 8ecf72
+void RenderText_Draw_Choose1Or2(void) {  // 8ecf72
   uint8 y;
   if (text_wait_countdown2 != 0) {
     if (--text_wait_countdown2 == 1)
@@ -2712,7 +2712,7 @@ void RenderText_Draw_Choose1Or2() {  // 8ecf72
   }
 }
 
-bool RenderText_Draw_Scroll() {  // 8ecfe2
+bool RenderText_Draw_Scroll(void) {  // 8ecfe2
   uint8 r2 = dialogue_scroll_speed;
   do {
     for (int i = 0; i < 0x7e0; i += 16) {
@@ -2739,13 +2739,13 @@ bool RenderText_Draw_Scroll() {  // 8ecfe2
   return false;
 }
 
-void RenderText_SetDefaultWindowPosition() {  // 8ed280
+void RenderText_SetDefaultWindowPosition(void) {  // 8ed280
   uint16 y = link_y_coord - BG2VOFS_copy2;
   int flag = (y < 0x78);
   text_msgbox_topleft = kText_Positions[flag];
 }
 
-void RenderText_DrawBorderInitialize() {  // 8ed29c
+void RenderText_DrawBorderInitialize(void) {  // 8ed29c
   text_msgbox_topleft_copy = text_msgbox_topleft;
 }
 
@@ -2762,14 +2762,14 @@ uint16 *RenderText_DrawBorderRow(uint16 *d, int y) {  // 8ed2ab
   return d;
 }
 
-void Text_BuildCharacterTilemap() {  // 8ed2ec
+void Text_BuildCharacterTilemap(void) {  // 8ed2ec
   uint16 *vwf300 = (uint16 *)&g_ram[0x1300];
   for (int i = 0; i < 126; i++)
     vwf300[i] = text_tilemap_cur++;
   RenderText_Refresh();
 }
 
-void RenderText_Refresh() {  // 8ed307
+void RenderText_Refresh(void) {  // 8ed307
   RenderText_DrawBorderInitialize();
   text_msgbox_topleft_copy += 0x21;
   uint16 *d = vram_upload_data;
@@ -2786,7 +2786,7 @@ void RenderText_Refresh() {  // 8ed307
 }
 
 
-void Text_GenerateMessagePointers() {  // 8ed3eb
+void Text_GenerateMessagePointers(void) {  // 8ed3eb
   // This is not actually used. Only for ram compat.
   MemBlk dialogue = FindIndexInMemblk(g_zenv.dialogue_blk, 1);
   uint32 p = 0x1c8000;
@@ -2801,12 +2801,12 @@ void Text_GenerateMessagePointers() {  // 8ed3eb
   }
 }
 
-void DungMap_LightenUpMap() {  // 8ed940
+void DungMap_LightenUpMap(void) {  // 8ed940
   if (++INIDISP_copy == 0xf)
     overworld_map_state++;
 }
 
-void DungMap_Backup() {  // 8ed94c
+void DungMap_Backup(void) {  // 8ed94c
   if (--INIDISP_copy)
     return;
   MOSAIC_copy = 3;
@@ -2839,7 +2839,7 @@ void DungMap_Backup() {  // 8ed94c
   music_control = 0xf2;
 }
 
-void DungMap_FadeMapToBlack() {  // 8eda37
+void DungMap_FadeMapToBlack(void) {  // 8eda37
   if (--INIDISP_copy)
     return;
   EnableForceBlank();
@@ -2855,7 +2855,7 @@ void DungMap_FadeMapToBlack() {  // 8eda37
   flag_update_cgram_in_nmi++;
 }
 
-void DungMap_RestoreOld() {  // 8eda79
+void DungMap_RestoreOld(void) {  // 8eda79
   OrientLampLightCone();
   if (++INIDISP_copy != 0xf)
     return;
@@ -2867,7 +2867,7 @@ void DungMap_RestoreOld() {  // 8eda79
   HDMAEN_copy = mapbak_HDMAEN;
 }
 
-void Death_PlayerSwoon() {  // 8ff5e3
+void Death_PlayerSwoon(void) {  // 8ff5e3
   int k = link_var30d;
   if (sign8(--some_animation_timer)) {
     k++;
@@ -2886,7 +2886,7 @@ void Death_PlayerSwoon() {  // 8ff5e3
   SetOamPlain(&oam_buf[0x74], x, y, 0xaa, kDeath_SprFlags[link_is_on_lower_level] | 2, 2);
 }
 
-void Death_PrepFaint() {  // 8ffa6f
+void Death_PrepFaint(void) {  // 8ffa6f
   link_direction_facing = 2;
   player_unk1 = 1;
   link_var30d = 0;
@@ -2922,7 +2922,7 @@ void Death_PrepFaint() {  // 8ffa6f
 
 
 
-void DisplaySelectMenu() {
+void DisplaySelectMenu(void) {
   choice_in_multiselect_box_bak = choice_in_multiselect_box;
   dialogue_message_index = 0x186;
   uint8 bak = main_module_index;

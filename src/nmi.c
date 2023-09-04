@@ -39,11 +39,11 @@ static PlayerHandlerFunc *const kNmiSubroutines[25] = {
   &NMI_UpdatePegTiles,
   &NMI_UpdateStarTiles,
 };
-void NMI_UploadSubscreenOverlayFormer() {
+void NMI_UploadSubscreenOverlayFormer(void) {
   NMI_HandleArbitraryTileMap(&g_ram[0x12000], 0, 0x40);
 }
 
-void NMI_UploadSubscreenOverlayLatter() {
+void NMI_UploadSubscreenOverlayLatter(void) {
   NMI_HandleArbitraryTileMap(&g_ram[0x13000], 0x40, 0x80);
 }
 
@@ -64,7 +64,7 @@ static void CopyToVramLow(const uint8 *src, uint32 addr, int num) {
     dst[i] = (dst[i] & ~0xff) | src[i];
 }
 
-void WritePpuRegisters() {
+void WritePpuRegisters(void) {
   zelda_ppu_write(W12SEL, W12SEL_copy);
   zelda_ppu_write(W34SEL, W34SEL_copy);
   zelda_ppu_write(WOBJSEL, WOBJSEL_copy);
@@ -106,7 +106,7 @@ void WritePpuRegisters() {
   zelda_ppu_write(BG34NBA, 7);
 }
 
-static void Interrupt_NMI_AudioParts_Locked() {
+static void Interrupt_NMI_AudioParts_Locked(void) {
   if (music_control == 0) {
 //    if (zelda_apu_read(APUI00) == last_music_control)
 //      zelda_apu_write(APUI00, 0);
@@ -169,7 +169,7 @@ void NMI_ReadJoypads(uint16 joypad_input) {  // 8083d1
   joypad1H_last2 = r1;
 }
 
-void NMI_DoUpdates() {  // 8089e0
+void NMI_DoUpdates(void) {  // 8089e0
   if (!nmi_disable_core_updates) {
     memcpy(&g_zenv.vram[0x4100], &kLinkGraphics[dma_source_addr_0 - 0x8000], 0x40);
     memcpy(&g_zenv.vram[0x4120], &kLinkGraphics[dma_source_addr_1 - 0x8000], 0x40);
@@ -272,22 +272,22 @@ void NMI_DoUpdates() {  // 8089e0
   kNmiSubroutines[idx]();
 }
 
-void NMI_UploadTilemap() {  // 808cb0
+void NMI_UploadTilemap(void) {  // 808cb0
   memcpy(&g_zenv.vram[kNmiVramAddrs[BYTE(nmi_load_target_addr)] << 8], &g_ram[0x1000], 0x800);
 
   *(uint16 *)&g_ram[0x1000] = 0;
   nmi_disable_core_updates = 0;
 }
 
-void NMI_UploadTilemap_doNothing() {  // 808ce3
+void NMI_UploadTilemap_doNothing(void) {  // 808ce3
 }
 
-void NMI_UploadBG3Text() {  // 808ce4
+void NMI_UploadBG3Text(void) {  // 808ce4
   memcpy(&g_zenv.vram[0x7c00], &g_ram[0x10000], 0x7e0);
   nmi_disable_core_updates = 0;
 }
 
-void NMI_UpdateOWScroll() {  // 808d13
+void NMI_UpdateOWScroll(void) {  // 808d13
   uint8 *src = (uint8 *)uvram.data;
   int f = WORD(src[0]);
   int step = (f & 0x8000) ? 32 : 1;
@@ -302,7 +302,7 @@ void NMI_UpdateOWScroll() {  // 808d13
   nmi_disable_core_updates = 0;
 }
 
-void NMI_UpdateSubscreenOverlay() {  // 808d62
+void NMI_UpdateSubscreenOverlay(void) {  // 808d62
   NMI_HandleArbitraryTileMap(&g_ram[0x12000], 0, 0x80);
 }
 
@@ -315,16 +315,16 @@ void NMI_HandleArbitraryTileMap(const uint8 *src, int i, int i_end) {  // 808dae
   nmi_disable_core_updates = 0;
 }
 
-void NMI_UpdateBG1Wall() {  // 808e09
+void NMI_UpdateBG1Wall(void) {  // 808e09
   // Secret Wall Right
   CopyToVramVertical(nmi_load_target_addr, &g_ram[0xc880], 0x40);
   CopyToVramVertical(nmi_load_target_addr + 0x800, &g_ram[0xc8c0], 0x40);
 }
 
-void NMI_TileMapNothing() {  // 808e4b
+void NMI_TileMapNothing(void) {  // 808e4b
 }
 
-void NMI_UpdateLoadLightWorldMap() {  // 808e54
+void NMI_UpdateLoadLightWorldMap(void) {  // 808e54
   static const uint16 kLightWorldTileMapDsts[4] = { 0, 0x20, 0x1000, 0x1020 };
   const uint8 *src = GetLightOverworldTilemap();
   for (int j = 0; j != 4; j++) {
@@ -337,51 +337,51 @@ void NMI_UpdateLoadLightWorldMap() {  // 808e54
   }
 }
 
-void NMI_UpdateBG2Left() {  // 808ea9
+void NMI_UpdateBG2Left(void) {  // 808ea9
   CopyToVram(0, &g_ram[0x10000], 0x800);
   CopyToVram(0x800, &g_ram[0x10800], 0x800);
 }
 
-void NMI_UpdateBGChar3and4() {  // 808ee7
+void NMI_UpdateBGChar3and4(void) {  // 808ee7
   memcpy(&g_zenv.vram[0x2c00], &g_ram[0x10000], 0x1000);
   nmi_disable_core_updates = 0;
 }
 
-void NMI_UpdateBGChar5and6() {  // 808f16
+void NMI_UpdateBGChar5and6(void) {  // 808f16
   memcpy(&g_zenv.vram[0x3400], &g_ram[0x11000], 0x1000);
   nmi_disable_core_updates = 0;
 }
 
-void NMI_UpdateBGCharHalf() {  // 808f45
+void NMI_UpdateBGCharHalf(void) {  // 808f45
   memcpy(&g_zenv.vram[BYTE(nmi_load_target_addr) * 256], &g_ram[0x11000], 0x400);
 }
 
-void NMI_UpdateBGChar0() {  // 808f72
+void NMI_UpdateBGChar0(void) {  // 808f72
   NMI_RunTileMapUpdateDMA(0x2000);
 }
 
-void NMI_UpdateBGChar1() {  // 808f79
+void NMI_UpdateBGChar1(void) {  // 808f79
   NMI_RunTileMapUpdateDMA(0x2800);
 }
 
-void NMI_UpdateBGChar2() {  // 808f80
+void NMI_UpdateBGChar2(void) {  // 808f80
   NMI_RunTileMapUpdateDMA(0x3000);
 }
 
-void NMI_UpdateBGChar3() {  // 808f87
+void NMI_UpdateBGChar3(void) {  // 808f87
   NMI_RunTileMapUpdateDMA(0x3800);
 }
 
-void NMI_UpdateObjChar0() {  // 808f8e
+void NMI_UpdateObjChar0(void) {  // 808f8e
   CopyToVram(0x4400, &g_ram[0x10000], 0x800);
   nmi_disable_core_updates = 0;
 }
 
-void NMI_UpdateObjChar2() {  // 808fbd
+void NMI_UpdateObjChar2(void) {  // 808fbd
   NMI_RunTileMapUpdateDMA(0x5000);
 }
 
-void NMI_UpdateObjChar3() {  // 808fc4
+void NMI_UpdateObjChar3(void) {  // 808fc4
   NMI_RunTileMapUpdateDMA(0x5800);
 }
 
@@ -390,7 +390,7 @@ void NMI_RunTileMapUpdateDMA(int dst) {  // 808fc9
   nmi_disable_core_updates = 0;
 }
 
-void NMI_UploadDarkWorldMap() {  // 808ff3
+void NMI_UploadDarkWorldMap(void) {  // 808ff3
   const uint8 *src = g_ram + 0x1000;
   int t = 0x810;
   for (int i = 0x20; i; i--) {
@@ -400,16 +400,16 @@ void NMI_UploadDarkWorldMap() {  // 808ff3
   }
 }
 
-void NMI_UploadGameOverText() {  // 809038
+void NMI_UploadGameOverText(void) {  // 809038
   CopyToVram(0x7800, &g_ram[0x2000], 0x800);
   CopyToVram(0x7d00, &g_ram[0x3400], 0x600);
 }
 
-void NMI_UpdatePegTiles() {  // 80908b
+void NMI_UpdatePegTiles(void) {  // 80908b
   CopyToVram(0x3d00, &g_ram[0x10000], 0x100);
 }
 
-void NMI_UpdateStarTiles() {  // 8090b7
+void NMI_UpdateStarTiles(void) {  // 8090b7
   CopyToVram(0x3ed0, &g_ram[0x10000], 0x40);
 }
 
@@ -452,7 +452,7 @@ void HandleStripes14(const uint8 *p) {  // 8092a1
   }
 }
 
-void NMI_UpdateIRQGFX() {  // 809347
+void NMI_UpdateIRQGFX(void) {  // 809347
   if (nmi_flag_update_polyhedral) {
     memcpy(&g_zenv.vram[0x5800], &g_ram[0xe800], 0x800);
     nmi_flag_update_polyhedral = 0;

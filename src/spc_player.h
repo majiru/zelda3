@@ -137,7 +137,7 @@ typedef struct SpcPlayer {
   uint8 ram[65536]; // rest of ram
 } SpcPlayer;
 
-SpcPlayer *SpcPlayer_Create();
+SpcPlayer *SpcPlayer_Create(void);
 void SpcPlayer_GenerateSamples(SpcPlayer *p);
 void SpcPlayer_Initialize(SpcPlayer *p);
 void SpcPlayer_Upload(SpcPlayer *p, const uint8_t *data);

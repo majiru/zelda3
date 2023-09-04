@@ -406,7 +406,7 @@ void zelda_apu_write(uint32_t adr, uint8_t val) {
   g_apu_write.ports[adr & 0x3] = val;
 }
 
-void ZeldaPushApuState() {
+void ZeldaPushApuState(void) {
   ZeldaApuLock();
   g_apu_write_ents[g_apu_write_ent_pos++ & 0xf] = g_apu_write;
   if (g_apu_write_count < 16)
@@ -415,12 +415,12 @@ void ZeldaPushApuState() {
   ZeldaApuUnlock();
 }
 
-static void ZeldaPopApuState() {
+static void ZeldaPopApuState(void) {
   if (g_apu_write_count != 0)
     memcpy(g_zenv.player->input_ports, &g_apu_write_ents[(g_apu_write_ent_pos - g_apu_write_count--) & 0xf], 4);
 }
 
-void ZeldaDiscardUnusedAudioFrames() {
+void ZeldaDiscardUnusedAudioFrames(void) {
   if (g_apu_write_count != 0 && memcmp(g_zenv.player->input_ports, &g_apu_write_ents[(g_apu_write_ent_pos - g_apu_write_count) & 0xf], 4) == 0) {
     if (g_apu_total_write >= 16) {
       g_apu_total_write = 14;
@@ -431,11 +431,11 @@ void ZeldaDiscardUnusedAudioFrames() {
   }
 }
 
-static void ZeldaResetApuQueue() {
+static void ZeldaResetApuQueue(void) {
   g_apu_write_ent_pos = g_apu_total_write = g_apu_write_count = 0;
 }
 
-uint8_t zelda_read_apui00() {
+uint8_t zelda_read_apui00(void) {
   // This needs to be here because the ancilla code reads
   // from the apu and we don't want to make the core code
   // dependent on the apu timings, so relocated this value
@@ -457,7 +457,7 @@ void ZeldaRenderAudio(int16 *audio_buffer, int samples, int channels) {
   ZeldaApuUnlock();
 }
 
-bool ZeldaIsMusicPlaying() {
+bool ZeldaIsMusicPlaying(void) {
   if (g_msu_player.state != kMsuState_Idle) {
     return g_msu_player.state != kMsuState_FinishedPlaying;
   } else {
@@ -504,7 +504,7 @@ void ZeldaRestoreMusicAfterLoad_Locked(bool is_reset) {
   ZeldaResetApuQueue();
 }
 
-void ZeldaSaveMusicStateToRam_Locked() {
+void ZeldaSaveMusicStateToRam_Locked(void) {
   SpcPlayer_CopyVariablesToRam(g_zenv.player);
   // SpcPlayer.input_ports is not saved to the SpcPlayer ram by SpcPlayer_CopyVariablesToRam,
   // in any case, we want to save the most recently written data, and that might still

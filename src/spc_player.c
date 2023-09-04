@@ -160,7 +160,7 @@ static void Dsp_Write(SpcPlayer *p, uint8_t reg, uint8 value) {
     dsp_write(p->dsp, reg, value);
 }
 
-static void Not_Implemented() {
+static void Not_Implemented(void) {
   assert(0);
   printf("Not Implemented\n");
 }
@@ -1185,7 +1185,7 @@ static void Interrupt_Reset(SpcPlayer *p) {
   p->timer_cycles = 0;
 }
 
-SpcPlayer *SpcPlayer_Create() {
+SpcPlayer *SpcPlayer_Create(void) {
   SpcPlayer *p = (SpcPlayer *)malloc(sizeof(SpcPlayer));
   p->dsp = dsp_init(p->ram);
   p->reg_write_history = 0;
@@ -1324,7 +1324,7 @@ bool CompareSpcImpls(SpcPlayer *p, SpcPlayer *p_org, Apu *apu) {
   return true;
 }
 
-void RunAudioPlayer() {
+void RunAudioPlayer(void) {
   if(SDL_Init(SDL_INIT_AUDIO) != 0) {
     printf("Failed to init SDL: %s\n", SDL_GetError());
     return;

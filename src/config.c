@@ -250,7 +250,7 @@ static void ParseGamepadArray(char *value, int cmd, int size) {
   }
 }
 
-static void RegisterDefaultKeys() {
+static void RegisterDefaultKeys(void) {
   for (int i = 1; i < countof(kKeyNameId); i++) {
     if (!has_keynameid[i]) {
       int size = kKeyNameId[i].size, k = kKeyNameId[i].id;

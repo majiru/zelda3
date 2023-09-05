@@ -160,7 +160,9 @@ void ZeldaPlayMsuAudioTrack(uint8 music_ctrl) {
 static void MsuPlayer_CloseFile(MsuPlayer *mp) {
   if (mp->f)
     fclose(mp->f);
+#ifndef __plan9__
   opus_decoder_destroy(mp->opus);
+#endif
   mp->opus = NULL;
   mp->f = NULL;
   if (mp->state != kMsuState_FinishedPlaying)
@@ -221,6 +223,7 @@ static void MsuPlayer_Open(MsuPlayer *mp, int orig_track, bool resume_from_snaps
   mp->range_repeat = mp->resume_info.range_repeat;
   mp->buffer_size = mp->buffer_pos = 0;
   mp->preskip = 0;
+#ifndef __plan9__
   if (file_tag == (('Z' << 24) | ('U' << 16) | ('P' << 8) | 'O')) {
     mp->opus = opus_decoder_create(48000, 2, NULL);
     if (!mp->opus)
@@ -235,6 +238,7 @@ static void MsuPlayer_Open(MsuPlayer *mp, int orig_track, bool resume_from_snaps
   } else {
     goto READ_ERROR;
   }
+#endif
 }
 
 static void MixToBufferWithVolume(int16 *dst, const int16 *src, size_t n, float volume) {
@@ -283,6 +287,7 @@ static void MixToBuffer(MsuPlayer *mp, int16 *dst, const int16 *src, uint32 n) {
 
 void MsuPlayer_Mix(MsuPlayer *mp, int16 *audio_buffer, int audio_samples) {
   int r;
+#ifndef __plan9__
 
   do {
     if (mp->buffer_size - mp->buffer_pos == 0) {
@@ -394,6 +399,7 @@ void MsuPlayer_Mix(MsuPlayer *mp, int16 *audio_buffer, int audio_samples) {
 #endif
     audio_samples -= nr, audio_buffer += nr * 2;
   } while (audio_samples != 0);
+#endif
 }
 
 // Maintain a queue cause the snes and audio callback are not in sync.

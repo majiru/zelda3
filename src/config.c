@@ -15,6 +15,9 @@ enum {
 
 Config g_config;
 
+#ifdef __plan9__
+enum { SDLK_SCANCODE_MASK = (1 << 30) };
+#endif
 #define REMAP_SDL_KEYCODE(key) ((key) & SDLK_SCANCODE_MASK ? kKeyMod_ScanCode : 0) | (key) & (kKeyMod_ScanCode - 1)
 #define _(x) REMAP_SDL_KEYCODE(x)
 #define S(x) REMAP_SDL_KEYCODE(x) | kKeyMod_Shift

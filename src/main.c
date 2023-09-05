@@ -12,6 +12,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 #endif
+#ifdef __plan9__
+#include <SDL2/SDL_mixer.h>
+#endif
 
 #include "snes/ppu.h"
 
@@ -31,7 +34,7 @@ static bool g_run_without_emu = 0;
 
 // Forwards
 static bool LoadRom(const char *filename);
-static void LoadLinkGraphics();
+static void LoadLinkGraphics(void);
 static void RenderNumber(uint8 *dst, size_t pitch, int n, bool big);
 static void HandleInput(int keyCode, int modCode, bool pressed);
 static void HandleCommand(uint32 j, bool pressed);
@@ -40,8 +43,8 @@ static void HandleGamepadInput(int button, bool pressed);
 static void HandleGamepadAxisInput(int gamepad_id, int axis, int value);
 static void OpenOneGamepad(int i);
 static void HandleVolumeAdjustment(int volume_adjustment);
-static void LoadAssets();
-static void SwitchDirectory();
+static void LoadAssets(void);
+static void SwitchDirectory(void);
 
 enum {
   kDefaultFullscreen = 0,
@@ -144,7 +147,7 @@ static SDL_HitTestResult HitTestCallback(SDL_Window *win, const SDL_Point *pt, v
   return SDL_HITTEST_NORMAL;
 }
 
-static void DrawPpuFrameWithPerf() {
+static void DrawPpuFrameWithPerf(void) {
   int render_scale = PpuGetCurrentRenderScale(g_zenv.ppu, g_ppu_render_flags);
   uint8 *pixel_buffer = 0;
   int pitch = 0;
@@ -185,12 +188,16 @@ static void SDLCALL AudioCallback(void *userdata, Uint8 *stream, int len) {
       g_audiobuffer_end = g_audiobuffer + g_frames_per_block * g_audio_channels * sizeof(int16);
     }
     int n = IntMin(len, g_audiobuffer_end - g_audiobuffer_cur);
+#ifndef __plan9__
     if (g_sdl_audio_mixer_volume == SDL_MIX_MAXVOLUME) {
       memcpy(stream, g_audiobuffer_cur, n);
     } else {
       SDL_memset(stream, 0, n);
       SDL_MixAudioFormat(stream, g_audiobuffer_cur, AUDIO_S16, n, g_sdl_audio_mixer_volume);
     }
+#else
+    memcpy(stream, g_audiobuffer_cur, n);
+#endif
     g_audiobuffer_cur += n;
     stream += n;
     len -= n;
@@ -217,6 +224,7 @@ static bool SdlRenderer_Init(SDL_Window *window) {
     printf("Failed to create renderer: %s\n", SDL_GetError());
     return false;
   }
+#ifndef __plan9__
   SDL_RendererInfo renderer_info;
   SDL_GetRendererInfo(renderer, &renderer_info);
   if (kDebugFlag) {
@@ -225,6 +233,7 @@ static bool SdlRenderer_Init(SDL_Window *window) {
       printf(" %s", SDL_GetPixelFormatName(renderer_info.texture_formats[i]));
     printf("\n");
   }
+#endif
   g_renderer = renderer;
   if (!g_config.ignore_aspect_ratio)
     SDL_RenderSetLogicalSize(renderer, g_snes_width, g_snes_height);
@@ -241,7 +250,7 @@ static bool SdlRenderer_Init(SDL_Window *window) {
   return true;
 }
 
-static void SdlRenderer_Destroy() {
+static void SdlRenderer_Destroy(void) {
   SDL_DestroyTexture(g_texture);
   SDL_DestroyRenderer(g_renderer);
 }
@@ -255,7 +264,7 @@ static void SdlRenderer_BeginDraw(int width, int height, uint8 **pixels, int *pi
   }
 }
 
-static void SdlRenderer_EndDraw() {
+static void SdlRenderer_EndDraw(void) {
 
 //  uint64 before = SDL_GetPerformanceCounter();
   SDL_UnlockTexture(g_texture);
@@ -276,7 +285,9 @@ static const struct RendererFuncs kSdlRendererFuncs  = {
 
 void OpenGLRenderer_Create(struct RendererFuncs *funcs, bool use_opengl_es);
 
+#ifndef __plan9__
 #undef main
+#endif
 int main(int argc, char** argv) {
   argc--, argv++;
   const char *config_file = NULL;
@@ -336,6 +347,9 @@ int main(int argc, char** argv) {
   int window_width  = custom_size ? g_config.window_width  : g_current_window_scale * g_snes_width;
   int window_height = custom_size ? g_config.window_height : g_current_window_scale * g_snes_height;
 
+#ifdef __plan9__
+  g_renderer_funcs = kSdlRendererFuncs;
+#else
   if (g_config.output_method == kOutputMethod_OpenGL ||
       g_config.output_method == kOutputMethod_OpenGL_ES) {
     g_win_flags |= SDL_WINDOW_OPENGL;
@@ -343,6 +357,7 @@ int main(int argc, char** argv) {
   } else {
     g_renderer_funcs = kSdlRendererFuncs;
   }
+#endif
 
   SDL_Window* window = SDL_CreateWindow(kWindowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, window_width, window_height, g_win_flags);
   if(window == NULL) {
@@ -350,7 +365,9 @@ int main(int argc, char** argv) {
     return 1;
   }
   g_window = window;
+#ifndef __plan9__
   SDL_SetWindowHitTest(window, HitTestCallback, NULL);
+#endif
 
   if (!g_renderer_funcs.Initialize(window))
     return 1;
@@ -403,6 +420,7 @@ int main(int argc, char** argv) {
   while(running) {
     while(SDL_PollEvent(&event)) {
       switch(event.type) {
+#ifndef __plan9__
       case SDL_CONTROLLERDEVICEADDED:
         OpenOneGamepad(event.cdevice.which);
         break;
@@ -416,6 +434,7 @@ int main(int argc, char** argv) {
           HandleGamepadInput(b, event.type == SDL_CONTROLLERBUTTONDOWN);
         break;
       }
+#endif
       case SDL_MOUSEWHEEL:
         if (SDL_GetModState() & KMOD_CTRL && event.wheel.y != 0)
           ChangeWindowScale(event.wheel.y > 0 ? 1 : -1);
@@ -584,11 +603,11 @@ static void HandleCommand(uint32 j, bool pressed) {
   SDL_UnlockMutex(g_audio_mutex);
 }
 
-void ZeldaApuLock() {
+void ZeldaApuLock(void) {
   SDL_LockMutex(g_audio_mutex);
 }
 
-void ZeldaApuUnlock() {
+void ZeldaApuUnlock(void) {
   SDL_UnlockMutex(g_audio_mutex);
 }
 
@@ -656,15 +675,18 @@ static void HandleInput(int keyCode, int keyMod, bool pressed) {
 }
 
 static void OpenOneGamepad(int i) {
+#ifndef __plan9__
   if (SDL_IsGameController(i)) {
     SDL_GameController *controller = SDL_GameControllerOpen(i);
     if (!controller)
       fprintf(stderr, "Could not open gamepad %d: %s\n", i, SDL_GetError());
   }
+#endif
 }
 
 static int RemapSdlButton(int button) {
   switch (button) {
+#ifndef __plan9__
   case SDL_CONTROLLER_BUTTON_A: return kGamepadBtn_A;
   case SDL_CONTROLLER_BUTTON_B: return kGamepadBtn_B;
   case SDL_CONTROLLER_BUTTON_X: return kGamepadBtn_X;
@@ -680,6 +702,7 @@ static int RemapSdlButton(int button) {
   case SDL_CONTROLLER_BUTTON_DPAD_DOWN: return kGamepadBtn_DpadDown;
   case SDL_CONTROLLER_BUTTON_DPAD_LEFT: return kGamepadBtn_DpadLeft;
   case SDL_CONTROLLER_BUTTON_DPAD_RIGHT: return kGamepadBtn_DpadRight;
+#endif
   default: return -1;
   }
 }
@@ -728,6 +751,7 @@ static float ApproximateAtan2(float y, float x) {
 }
 
 static void HandleGamepadAxisInput(int gamepad_id, int axis, int value) {
+#ifndef __plan9__
   static int last_gamepad_id, last_x, last_y;
   if (axis == SDL_CONTROLLER_AXIS_LEFTX || axis == SDL_CONTROLLER_AXIS_LEFTY) {
     // ignore other gamepads unless they have a big input
@@ -761,6 +785,7 @@ static void HandleGamepadAxisInput(int gamepad_id, int axis, int value) {
     if (value < 12000 || value >= 16000)  // hysteresis
       HandleGamepadInput(axis == SDL_CONTROLLER_AXIS_TRIGGERLEFT ? kGamepadBtn_L2 : kGamepadBtn_R2, value >= 12000);
   }
+#endif
 }
 
 static bool LoadRom(const char *filename) {
@@ -793,7 +818,7 @@ static bool ParseLinkGraphics(uint8 *file, size_t length) {
   return true;
 }
 
-static void LoadLinkGraphics() {
+static void LoadLinkGraphics(void) {
   if (g_config.link_graphics) {
     fprintf(stderr, "Loading Link Graphics: %s\n", g_config.link_graphics);
     size_t length = 0;
@@ -808,7 +833,7 @@ static void LoadLinkGraphics() {
 const uint8 *g_asset_ptrs[kNumberOfAssets];
 uint32 g_asset_sizes[kNumberOfAssets];
 
-static void LoadAssets() {
+static void LoadAssets(void) {
   size_t length = 0;
   uint8 *data = ReadWholeFile("zelda3_assets.dat", &length);
   if (!data) {
@@ -828,7 +853,10 @@ static void LoadAssets() {
   static const char kAssetsSig[] = { kAssets_Sig };
 
   if (length < 16 + 32 + 32 + 8 + kNumberOfAssets * 4 ||
+#ifndef __plan9__
+/* FIXME */
       memcmp(data, kAssetsSig, 48) != 0 ||
+#endif
       *(uint32*)(data + 80) != kNumberOfAssets)
     Die("Invalid assets file");
 
@@ -852,7 +880,7 @@ static void LoadAssets() {
 }
 
 // Go some steps up and find zelda3.ini
-static void SwitchDirectory() {
+static void SwitchDirectory(void) {
   char buf[4096];
   if (!getcwd(buf, sizeof(buf) - 32))
     return;
